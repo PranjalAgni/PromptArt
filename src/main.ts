@@ -1,4 +1,8 @@
 const API_URL = "https://api.openai.com/v1/images/generations";
+const openAIAPIInput = document.querySelector(
+  "#openAIAPIInput"
+)! as HTMLInputElement;
+const openAISaveBtn = document.querySelector("#openAISaveBtn")!;
 const generateButton = document.querySelector("#generateButton")!;
 const cancelButton = document.querySelector("#cancelButton")!;
 const promptInput = document.querySelector("#promptInput")! as HTMLInputElement;
@@ -15,6 +19,13 @@ cancelButton.addEventListener("click", () => {
   console.log("Clicked on the cancel button");
   promptInput.value = "";
   setGenerateButtonLoadingState(false);
+});
+
+openAISaveBtn.addEventListener("click", () => {
+  const apiKey = openAIAPIInput.value;
+  if (apiKey.length) {
+    window.localStorage.setItem("openai-api-key", apiKey);
+  }
 });
 
 const setGenerateButtonLoadingState = (isLoading: boolean) => {
@@ -35,11 +46,12 @@ const generateArtFromPrompt = async (inputText: string) => {
   }
 
   try {
+    const API_KEY = window.localStorage.getItem("openai-api-key");
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer <ADD_YOUR_APIKEY>`,
+        Authorization: `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
         prompt: inputText,

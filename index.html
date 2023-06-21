@@ -11,7 +11,6 @@
       href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap"
       rel="stylesheet"
     />
-    <link href="https://fonts.googleapis.com/css2?family=Tilt+Prism&display=swap" rel="stylesheet">
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui@3.1.5/dist/full.css"
       rel="stylesheet"
@@ -19,13 +18,37 @@
     />
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="font-mono">
+  <body class="font-mono bg-gradient-to-br from-purple-500 to-blue-500">
+    <div class="navbar">
+      <div class="navbar-start"></div>
+      <div class="navbar-center">
+        <a class="text-3xl text-white font-bold mt-4 mb-8">
+          Prompt Art 🌈🌻
+        </a>
+      </div>
+      <div class="navbar-end">
+        <button class="btn btn-ghost btn-circle text-white" onclick="settings_modal.showModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-plus"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><line x1="12" x2="12" y1="8" y2="16"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+        </button>
+        <dialog id="settings_modal" class="modal">
+          <form method="dialog" class="modal-box">
+            <h3 class="font-bold text-lg">Please add your OpenAI API key!</h3>
+            <div class="flex justify-center m-5">
+              <input id="openAIAPIInput" type="text" placeholder="Type here" class="input input-bordered input-secondary w-full max-w-xs items-center" />
+            </div>
+            <div class="modal-action">
+              <!-- if there is a button in form, it will close the modal -->
+              <button id="openAISaveBtn" class="btn">Save</button>
+            </div>
+          </form>
+        </dialog>
+      </div>
+    </div>
     <div
       id="app"
-      class="flex justify-center min-h-screen bg-gradient-to-br from-purple-500 to-blue-500"
+      class="flex justify-center min-h-screen bg-gradient-to-br from-purple-500 to-blue-500 pt-20"
     >
       <div class="text-center">
-        <h1 class="text-4xl text-white font-bold mt-4 mb-8">Prompt Art 🌈🌻</h1>
         <div class="bg-white max-w-md mx-auto p-8 rounded-lg shadow-lg">
           <p class="font-['Satisfy'] text-xl mb-4 text-gray-800">
             Generate beautiful images based on prompts.
