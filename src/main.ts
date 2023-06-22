@@ -1,4 +1,6 @@
 const API_URL = "https://api.openai.com/v1/images/generations";
+const COMPLETION_API_URL = "https://chat.openai.com/backend-api/conversation";
+
 const openAIAPIInput = document.querySelector(
   "#openAIAPIInput"
 )! as HTMLInputElement;
@@ -11,7 +13,7 @@ generateButton.addEventListener("click", async () => {
   console.log("Input prompt: ", promptInput.value);
   if (generateButton.childNodes.length === 1) {
     setGenerateButtonLoadingState(true);
-    await generateArtFromPrompt(promptInput.value);
+    await generateStoryFromPrompt(promptInput.value);
   }
 });
 
@@ -64,6 +66,34 @@ const generateArtFromPrompt = async (inputText: string) => {
     console.log("Data: ", data);
   } catch (error) {
     console.error("Unable to generate art: ", error);
+  } finally {
+    setGenerateButtonLoadingState(false);
+  }
+};
+
+const generateStoryFromPrompt = async (inputText: string) => {
+  if (!inputText.length) {
+    throw new Error("Please enter a prompt");
+  }
+
+  try {
+    const API_KEY = window.localStorage.getItem("openai-api-key");
+    const response = await fetch(COMPLETION_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "text-davinci-002-render-sha",
+        messages: [{ role: "user", content: inputText }],
+      }),
+    });
+
+    const data = await response.json();
+    console.log("Completion: ", data);
+  } catch (error) {
+    console.error("Unable to generate story: ", error);
   } finally {
     setGenerateButtonLoadingState(false);
   }
