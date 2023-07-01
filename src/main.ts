@@ -98,3 +98,6 @@ const generateStoryFromPrompt = async (inputText: string) => {
     setGenerateButtonLoadingState(false);
   }
 };
+
+// TODO:
+// 1. Adding HuggingFace text to image generation api
