@@ -1,3 +1,5 @@
+import { HfInference } from "https://cdn.jsdelivr.net/npm/@huggingface/inference@2.5.2/+esm";
+
 const API_URL = "https://api.openai.com/v1/images/generations";
 const COMPLETION_API_URL = "https://chat.openai.com/backend-api/conversation";
 
@@ -49,6 +51,14 @@ const generateArtFromPrompt = async (inputText: string) => {
 
   try {
     const API_KEY = window.localStorage.getItem("openai-api-key");
+    const inference = new HfInference(API_KEY);
+    const someArt = await inference.textToImage({
+      model: "stabilityai/stable-diffusion-2",
+      inputs: inputText,
+    });
+
+    console.log("Art: ", someArt);
+
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
