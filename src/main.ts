@@ -15,6 +15,7 @@ generateButton.addEventListener("click", async () => {
   console.log("Input prompt: ", promptInput.value);
   if (generateButton.childNodes.length === 1) {
     setGenerateButtonLoadingState(true);
+    await generateArtFromPrompt(promptInput.value);
     await generateStoryFromPrompt(promptInput.value);
   }
 });
