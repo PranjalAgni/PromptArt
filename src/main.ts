@@ -53,12 +53,13 @@ const generateArtFromPrompt = async (inputText: string) => {
   try {
     const API_KEY = window.localStorage.getItem("openai-api-key");
     const inference = new HfInference(API_KEY);
+    // calls the inference API of hugging face and get's the image object
     const someArt = await inference.textToImage({
       model: "stabilityai/stable-diffusion-2",
       inputs: inputText,
     });
 
-    console.log("Art: ", someArt);
+    console.log("Art object: ", someArt);
 
     const response = await fetch(API_URL, {
       method: "POST",
