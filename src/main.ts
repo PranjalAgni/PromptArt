@@ -7,17 +7,22 @@ const generateButton = document.querySelector("#generateButton")!;
 const cancelButton = document.querySelector("#cancelButton")!;
 const promptInput = document.querySelector("#promptInput")! as HTMLInputElement;
 const imageContainer = document.querySelector("#generatedImageContainer");
+const timerParagraph = document.querySelector(
+  "#timerId"
+)! as HTMLParagraphElement;
 
 const hfApiKey = window.localStorage.getItem("hf-api-key");
+
 if (hfApiKey) {
   hfAPIInput.value = hfApiKey;
 }
 
-const cleanImages = () => {
+const clearThings = () => {
   imageContainer?.replaceChildren();
+  timerParagraph.innerHTML = "";
 };
 generateButton.addEventListener("click", async () => {
-  cleanImages();
+  clearThings();
   if (generateButton.childNodes.length === 1) {
     setGenerateButtonLoadingState(true);
     await generateArtFromPrompt(promptInput.value);
@@ -54,14 +59,15 @@ const generateArtFromPrompt = async (inputText: string) => {
     throw new Error("Please enter a prompt");
   }
 
+  const intervalId = runTimerLoop();
   try {
     const API_KEY = window.localStorage.getItem("hf-api-key");
     const inference = new HfInference(API_KEY);
     // calls the inference API of hugging face and get's the image object
-    const generatedArt = await inference.textToImage({
+    const generatedArt = (await inference.textToImage({
       model: "stabilityai/stable-diffusion-2",
       inputs: inputText,
-    });
+    })) as Blob;
 
     console.log("Art object: ", generatedArt);
     const objectUrl = URL.createObjectURL(generatedArt);
@@ -72,8 +78,14 @@ const generateArtFromPrompt = async (inputText: string) => {
     console.error("Unable to generate art: ", error);
   } finally {
     setGenerateButtonLoadingState(false);
+    clearTimeout(intervalId);
   }
 };
 
-// TODO:
-// 1. Adding HuggingFace text to image generation api
+const runTimerLoop = () => {
+  let timeElapsedInSeconds = 0;
+  return setInterval(() => {
+    timeElapsedInSeconds += 1;
+    timerParagraph.innerHTML = `${timeElapsedInSeconds} seconds`;
+  }, 1000);
+};
