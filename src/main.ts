@@ -1,22 +1,26 @@
+// @ts-ignore
 import { HfInference } from "https://cdn.jsdelivr.net/npm/@huggingface/inference@2.5.2/+esm";
 
-const API_URL = "https://api.openai.com/v1/images/generations";
-const COMPLETION_API_URL = "https://chat.openai.com/backend-api/conversation";
-
-const openAIAPIInput = document.querySelector(
-  "#openAIAPIInput"
-)! as HTMLInputElement;
-const openAISaveBtn = document.querySelector("#openAISaveBtn")!;
+const hfAPIInput = document.querySelector("#hfAPIInput")! as HTMLInputElement;
+const hfSaveBtn = document.querySelector("#hfSaveBtn")!;
 const generateButton = document.querySelector("#generateButton")!;
 const cancelButton = document.querySelector("#cancelButton")!;
 const promptInput = document.querySelector("#promptInput")! as HTMLInputElement;
+const imageContainer = document.querySelector("#generatedImageContainer");
 
+const hfApiKey = window.localStorage.getItem("hf-api-key");
+if (hfApiKey) {
+  hfAPIInput.value = hfApiKey;
+}
+
+const cleanImages = () => {
+  imageContainer?.replaceChildren();
+};
 generateButton.addEventListener("click", async () => {
-  console.log("Input prompt: ", promptInput.value);
+  cleanImages();
   if (generateButton.childNodes.length === 1) {
     setGenerateButtonLoadingState(true);
     await generateArtFromPrompt(promptInput.value);
-    await generateStoryFromPrompt(promptInput.value);
   }
 });
 
@@ -26,10 +30,10 @@ cancelButton.addEventListener("click", () => {
   setGenerateButtonLoadingState(false);
 });
 
-openAISaveBtn.addEventListener("click", () => {
-  const apiKey = openAIAPIInput.value;
+hfSaveBtn.addEventListener("click", () => {
+  const apiKey = hfAPIInput.value;
   if (apiKey.length) {
-    window.localStorage.setItem("openai-api-key", apiKey);
+    window.localStorage.setItem("hf-api-key", apiKey);
   }
 });
 
@@ -51,61 +55,21 @@ const generateArtFromPrompt = async (inputText: string) => {
   }
 
   try {
-    const API_KEY = window.localStorage.getItem("openai-api-key");
+    const API_KEY = window.localStorage.getItem("hf-api-key");
     const inference = new HfInference(API_KEY);
     // calls the inference API of hugging face and get's the image object
-    const someArt = await inference.textToImage({
+    const generatedArt = await inference.textToImage({
       model: "stabilityai/stable-diffusion-2",
       inputs: inputText,
     });
 
-    console.log("Art object: ", someArt);
-
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        prompt: inputText,
-        n: 1,
-        size: "1024x1024",
-      }),
-    });
-
-    const data = await response.json();
-    console.log("Data: ", data);
+    console.log("Art object: ", generatedArt);
+    const objectUrl = URL.createObjectURL(generatedArt);
+    const imageElement = document.createElement("img");
+    imageElement.src = objectUrl;
+    imageContainer?.appendChild(imageElement);
   } catch (error) {
     console.error("Unable to generate art: ", error);
-  } finally {
-    setGenerateButtonLoadingState(false);
-  }
-};
-
-const generateStoryFromPrompt = async (inputText: string) => {
-  if (!inputText.length) {
-    throw new Error("Please enter a prompt");
-  }
-
-  try {
-    const API_KEY = window.localStorage.getItem("openai-api-key");
-    const response = await fetch(COMPLETION_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "text-davinci-002-render-sha",
-        messages: [{ role: "user", content: inputText }],
-      }),
-    });
-
-    const data = await response.json();
-    console.log("Completion: ", data);
-  } catch (error) {
-    console.error("Unable to generate story: ", error);
   } finally {
     setGenerateButtonLoadingState(false);
   }
