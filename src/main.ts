@@ -17,12 +17,12 @@ if (hfApiKey) {
   hfAPIInput.value = hfApiKey;
 }
 
-const clearThings = () => {
+const resetDomContainers = () => {
   imageContainer?.replaceChildren();
   timerParagraph.innerHTML = "";
 };
 generateButton.addEventListener("click", async () => {
-  clearThings();
+  resetDomContainers();
   if (generateButton.childNodes.length === 1) {
     setGenerateButtonLoadingState(true);
     await generateArtFromPrompt(promptInput.value);
