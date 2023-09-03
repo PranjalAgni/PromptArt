@@ -13,6 +13,8 @@ const timerParagraph = document.querySelector(
 
 const hfApiKey = window.localStorage.getItem("hf-api-key");
 
+console.log("Playing code escape yayayy");
+
 if (hfApiKey) {
   hfAPIInput.value = hfApiKey;
 }
